@@ -5,6 +5,12 @@
 // Print the result to the terminal.
 
 const readline = require('readline-sync');
+const MESSAGES = require('./calculator_messages.json');
+let number1;
+let number2;
+let operation;
+let output;
+let anotherCalculation;
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -14,46 +20,73 @@ function invalidNumber(number) {
   return number.trimStart() === '' || Number.isNaN(Number(number));
 }
 
-prompt('Welcome to Calculator!');
+prompt(MESSAGES['welcome']);
 
-prompt("What's the first number?");
-let number1 = readline.question();
-
-while (invalidNumber(number1)) {
-  prompt("Hmm... that doesn't look like a valid number.");
+function firstNumber() {
+  prompt(MESSAGES['firstNumber']);
   number1 = readline.question();
+
+  while (invalidNumber(number1)) {
+    prompt(MESSAGES['validNumber']);
+    number1 = readline.question();
+  }
 }
 
-prompt("What's the second number?");
-let number2 = readline.question();
-
-while (invalidNumber(number2)) {
-  prompt("Hmm... that doesn't look like a valid number.");
+function secondNumber() {
+  prompt(MESSAGES['secondNumber']);
   number2 = readline.question();
+
+  while (invalidNumber(number2)) {
+    prompt(MESSAGES['validNumber']);
+    number2 = readline.question();
+  }
 }
 
-prompt('What operation would you like to perform?\n1) Add 2) Subtract 3) Mulitply 4) Divide');
-let operation = readline.question();
+function calcOutput(op) {
+  switch (op) {
+    case MESSAGES['1']:
+      output = Number(number1) + Number(number2);
+      break;
+    case MESSAGES['2']:
+      output = Number(number1) - Number(number2);
+      break;
+    case MESSAGES['3']:
+      output = Number(number1) * Number(number2);
+      break;
+    case MESSAGES['4']:
+      output = Number(number1) / Number(number2);
+      break;
+  }
 
-while (!['1', '2', '3', '4'].includes(operation)) {
-  prompt('Must choose 1, 2, 3, or 4');
+  prompt(`The result is: ${output}`);
+}
+
+function askAgain() {
+  anotherCalculation = 'no';
+  prompt(MESSAGES['anotherCalc']);
+  anotherCalculation = readline.question().toLowerCase();
+}
+
+function calculate() {
+  firstNumber();
+
+  secondNumber();
+
+  prompt(MESSAGES['operationType']);
   operation = readline.question();
+
+  while (![MESSAGES['1'], MESSAGES['2'], MESSAGES['3'], MESSAGES['4']].includes(operation)) {
+    prompt(MESSAGES['validOperator']);
+    operation = readline.question();
+  }
+
+  calcOutput(operation);
+
+  askAgain();
 }
 
-let output;
-switch (operation) {
-  case '1':
-    output = Number(number1) + Number(number2);
-    break;
-  case '2':
-    output = Number(number1) - Number(number2);
-    break;
-  case '3':
-    output = Number(number1) * Number(number2);
-    break;
-  case '4':
-    output = Number(number1) / Number(number2);
-    break;
-}
+calculate();
 
-prompt(`The result is: ${output}`);
+while (anotherCalculation === MESSAGES['yes']) {
+  calculate();
+}

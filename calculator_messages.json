@@ -1,0 +1,15 @@
+{
+  "welcome": "Welcome to Calculator! Enter your name:",
+  "validName": "Make sure to enter a valid name.",
+  "firstNumber": "What's the first number?",
+  "secondNumber": "What's the second number?",
+  "validNumber": "Hmm... that doesn't look like a valid number.",
+  "anotherCalc": "Would you like to calculate another operation?",
+  "operationType": "What operation would you like to perform?\n1) Add 2) Subtract 3) Mulitply 4) Divide",
+  "validOperator": "Must choose 1, 2, 3, or 4",
+  "yes": "yes",
+  "1": "1",
+  "2": "2",
+  "3": "3",
+  "4": "4"
+}
