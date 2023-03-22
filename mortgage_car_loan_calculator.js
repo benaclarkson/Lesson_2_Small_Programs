@@ -116,10 +116,8 @@
 
 const READLINE = require('readline-sync');
 const INVALID_MSG = "Hmm... That doesn't appear to be a valid input.";
-let loanAmount;
-let annualPercentageRate;
-let loanDuration;
-let monthlyPayment;
+const MONTHS_IN_YEAR = 12;
+const PERCENTAGE = 100;
 
 function prompt(message) {
   console.log(`=> ${message}`);
@@ -127,73 +125,111 @@ function prompt(message) {
 
 function captureLoanAmount() {
   prompt('What is the total loan amount? (ex: $50,000)');
-  loanAmount = +(READLINE.question()
+  return +(READLINE.question()
     .trimStart()
     .trimEnd()
     .replace(/\$/, '')
     .replace(/,/, ''));
 }
 
+function zeroAPR(aPR) {
+  if (aPR === '0' || aPR === '0%' || aPR === '0.0%' || aPR === '0.00%') {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function captureApr() {
   prompt('What is the Annual Percentage Rate? (ex: 6%)');
-  annualPercentageRate = READLINE.question()
+  let tempAnnualPercentageRate = READLINE.question()
     .trimStart()
     .trimEnd();
 
-  if (annualPercentageRate.match(/\d+.*%/)) {
-    annualPercentageRate = +(annualPercentageRate.replace(/[%]/, '')) / 100;
+  if (zeroAPR(tempAnnualPercentageRate)) {
+    return 0.00
+  } else if (tempAnnualPercentageRate.match(/\d+.*%*/)) {
+    return +(tempAnnualPercentageRate.replace(/[%]/, '')) / PERCENTAGE;
   } else {
-    annualPercentageRate = +(annualPercentageRate);
+    return +(tempAnnualPercentageRate);
   }
 }
 
 function captureLoanDuration() {
   prompt('What is the loan duration, in months?');
-  loanDuration = +(READLINE.question()
+  return +(READLINE.question()
     .trimStart()
     .trimEnd());
 }
 
-function calculatePayment() {
-  let monthlyPaymentRate = annualPercentageRate / 12;
-  monthlyPayment = loanAmount *
+function calculatePayment(loanAmt, aPR, loanDur) {
+  if (aPR === 0.00) return loanAmt / loanDur;
+
+  let monthlyPaymentRate = aPR / MONTHS_IN_YEAR;
+  return loanAmt *
     (monthlyPaymentRate /
-    (1 - Math.pow((1 + monthlyPaymentRate), (-loanDuration))));
+    (1 - Math.pow((1 + monthlyPaymentRate), (-loanDur))));
 }
 
-console.clear();
-prompt('Welcome to Mortgage Calculator!');
+function welcomeUser() {
+  console.clear();
+  prompt('Welcome to Mortgage Calculator!');
+}
+
+function invalidLoanAmount(amt) {
+  return (Number.isNaN(amt) || amt <= 0);
+}
+
+function invalidAPR(apr) {
+  return (Number.isNaN(apr) || apr < 0);
+}
+
+function invalidLoanDuration(duration) {
+  return (Number.isNaN(duration) || duration <= 0);
+}
+
+function displayMonthlyPayment(pmt) {
+  prompt(`Your monthly payment is: $${pmt.toFixed(2)}`);
+}
+
+function anotherCalc() {
+  prompt('-------------------------------------------------------');
+  prompt('Would you like calculate another monthly mortgage rate?');
+  prompt('(Enter "y" or "n")');
+  return READLINE.question().toLowerCase();
+}
+
+function invalidAnswer(response) {
+  return (response !== 'y' && response !== 'n');
+}
+
+welcomeUser();
 
 while (true) {
-  captureLoanAmount();
-
-  while (Number.isNaN(loanAmount) || loanAmount <= 0) {
+  let loanAmount = captureLoanAmount();
+  while (invalidLoanAmount(loanAmount)) {
     prompt(INVALID_MSG);
-    captureLoanAmount();
+    loanAmount = captureLoanAmount();
   }
 
-  captureApr();
-
-  while (Number.isNaN(annualPercentageRate) || annualPercentageRate < 0) {
+  let annualPercentageRate = captureApr();
+  while (invalidAPR(annualPercentageRate)) {
     prompt(INVALID_MSG);
-    captureApr();
+    annualPercentageRate = captureApr();
   }
 
-  captureLoanDuration();
-
-  while (Number.isNaN(loanDuration)) {
+  let loanDuration = captureLoanDuration();
+  while (invalidLoanDuration(loanDuration)) {
     prompt(INVALID_MSG);
-    captureLoanDuration();
+    loanDuration = captureLoanDuration();
   }
 
-  calculatePayment();
+  let monthlyPayment =
+    calculatePayment(loanAmount, annualPercentageRate, loanDuration);
+  displayMonthlyPayment(monthlyPayment);
 
-  prompt(`Your monthly payment is: $${monthlyPayment.toFixed(2)}`);
-
-  prompt('---------------------');
-  prompt('Would you like calculate another monthly mortgage rate?');
-  let answer = READLINE.question().toLowerCase();
-  while (answer !== 'y' && answer !== 'n') {
+  let answer = anotherCalc();
+  while (invalidAnswer(answer)) {
     prompt('Please enter "y" or "n".');
     answer = READLINE.question().toLowerCase();
   }
