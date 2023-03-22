@@ -147,7 +147,7 @@ function captureApr() {
     .trimEnd();
 
   if (zeroAPR(tempAnnualPercentageRate)) {
-    return 0.00
+    return 0.00;
   } else if (tempAnnualPercentageRate.match(/\d+.*%*/)) {
     return +(tempAnnualPercentageRate.replace(/[%]/, '')) / PERCENTAGE;
   } else {
