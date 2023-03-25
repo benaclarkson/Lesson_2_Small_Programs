@@ -171,7 +171,7 @@ function calculatePayment(loanAmt, aPR, loanDur) {
     (1 - Math.pow((1 + monthlyPaymentRate), (-loanDur))));
 }
 
-function welcomeUser() {
+function printWelcome() {
   console.clear();
   prompt('Welcome to Mortgage Calculator!');
 }
@@ -188,7 +188,7 @@ function invalidLoanDuration(duration) {
   return (Number.isNaN(duration) || duration <= 0);
 }
 
-function displayMonthlyPayment(pmt) {
+function printMonthlyPayment(pmt) {
   prompt(`Your monthly payment is: $${pmt.toFixed(2)}`);
 }
 
@@ -203,7 +203,7 @@ function invalidAnswer(response) {
   return (response !== 'y' && response !== 'n');
 }
 
-welcomeUser();
+printWelcome();
 
 while (true) {
   let loanAmount = captureLoanAmount();
@@ -226,7 +226,7 @@ while (true) {
 
   let monthlyPayment =
     calculatePayment(loanAmount, annualPercentageRate, loanDuration);
-  displayMonthlyPayment(monthlyPayment);
+  printMonthlyPayment(monthlyPayment);
 
   let answer = anotherCalc();
   while (invalidAnswer(answer)) {
